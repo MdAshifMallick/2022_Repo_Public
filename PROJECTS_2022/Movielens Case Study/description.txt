@@ -1,0 +1,2 @@
+Here, I performed the analysis using the Exploratory Data Analysis technique. I need to find features affecting the ratings of any particular movie and 
+built a model to predict the movie ratings.
