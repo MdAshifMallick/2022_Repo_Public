@@ -1,0 +1,14 @@
+DESCRIPTION
+
+You are provided with a dataset which consists of Zinc prices for the period Jan 1980 – Feb 2016.
+
+Objective: Obtain a time series model to analyze Zinc prices.
+
+Actions to Perform:
+
+Visualize the time series
+Check for the stationarity of your data using Rolling Statistics and Dickey-Fuller test and if present, remove it using the stationarity removal techniques
+Plot ACF and PACF plots. Find the p, d, and q values
+Perform ARIMA modeling
+Forecast the prices using the new model
+Access: Click on the Labs tab on the left side panel of the LMS. Copy or Note the username and password that are generated. Click on the Launch Lab button. On the page that appears, enter the username and password in the respective fields, and click Login.
