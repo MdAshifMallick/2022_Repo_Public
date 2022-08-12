@@ -1,0 +1,2 @@
+Performed a service request data analysis of New York City 311 calls. I had focus on the data wrangling techniques to understand the pattern in the data and also visualize 
+the major complaint types.
