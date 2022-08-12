@@ -1,0 +1,9 @@
+Customer Segmentation
+DESCRIPTION
+
+An e-commerce company has prepared a rough dataset containing shopping
+details of it customers, which include CustomerID, Genre, Age, Annual Income (k$), and
+Spending Score (1-100). The company is unable to target a specific set of customers with a particular
+set of SKUs.
+
+Objective: Segment customers into different groups based on their shopping trends.
