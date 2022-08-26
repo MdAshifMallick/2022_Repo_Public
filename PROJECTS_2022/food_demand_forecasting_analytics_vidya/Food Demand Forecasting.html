@@ -1,0 +1,1569 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title> Food Demand Forecasting </title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no user-scalable=no">
+<meta name="description" content=" Food Demand Forecasting | Practice Problem">
+<meta name="author" content="">
+<meta property="og:url" content="https://datahack.analyticsvidhya.com/contest/genpact-machine-learning-hackathon-1/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="" />
+<meta property="og:description" content=" Food Demand Forecasting | Practice Problem" />
+<meta property="og:image" content=" " />
+<meta property="og:image:width" content="300" />
+<meta property="og:image:height" content="300" />
+
+<link rel='icon' id='favicon' type='image/x-icon' href='https://www.analyticsvidhya.com/wp-content/uploads/2015/02/logo_square_v2.jpg'>
+<link rel='apple-touch-icon' href='https://www.analyticsvidhya.com/wp-content/uploads/2015/02/logo_square_v2.jpg'>
+<link rel='apple-touch-icon' sizes='76x76' href='https://www.analyticsvidhya.com/wp-content/uploads/2015/02/logo_square_v2.jpg'>
+<link rel='apple-touch-icon' sizes='114x114' href='https://www.analyticsvidhya.com/wp-content/uploads/2015/02/logo_square_v2.jpg'>
+<link rel='apple-touch-icon' sizes='144x144' href='https://www.analyticsvidhya.com/wp-content/uploads/2015/02/logo_square_v2.jpg'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" integrity="sha256-BtbhCIbtfeVWGsqxk1vOHEYXS6qcvQvLMZqjtpWUEx8=" crossorigin=anonymous>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.11/css/intlTelInput.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://automation.analyticsvidhya.com/static/css/stripBootstrap.css">
+<link rel="stylesheet" href="/static/CACHE/css/output.caf687e70e0b.css" type="text/css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" type="e0bff3b169be1af0a138f489-text/javascript"></script>
+
+<script type="e0bff3b169be1af0a138f489-text/javascript">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-MPSM42V');</script>
+</head>
+<body class=" pages  contest-playground ">
+<div class="black-rbga" style="display:none;"></div>
+<section id="avFlashSale" class="py-1 alert alert-warning alert-dismissible fade show m-0" style="display:none;" role="alert">
+<div class="container">
+<div class="row">
+<div class="av-sale-content w-100">
+<p></p>
+<a id="hrefId" class="btn btn-light ml-1"></a>
+<div id="clockdiv" style="display:none;">
+<span>
+<h4 class="days" id="day"></h4>
+<sup>D</sup>
+</span>
+<span>
+<h4 class="hours" id="hour"></h4>
+<sup>H</sup>
+</span>
+<span>
+<h4 class="minutes" id="minute"></h4>
+<sup>M</sup>
+</span>
+ <span>
+<h4 class="seconds" id="second"></h4>
+<sup>S</sup>
+</span>
+</div>
+</div>
+<button type="button" class="close ml-auto py-1" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+</div>
+</section>
+<header>
+<nav class="navbar navbar-expand-lg bg-white">
+<div class="container">
+<a class="navbar-brand" href="/">
+<img loading='lazy' class="logo" src="https://av-public-assets.s3.ap-south-1.amazonaws.com/logos/av-logo-svg.svg" alt="Analytics Vidhya">
+</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<i class="mobile-menu-iocn"></i>
+</button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item mr-3">
+<a href="https://www.analyticsvidhya.com/blog/" class="nav-link">Blog</a>
+</li>
+<li class="nav-item mr-3">
+<a href="https://courses.analyticsvidhya.com/" class="nav-link">Courses</a>
+</li>
+<li class="nav-item mr-3">
+<a href="http://blackbelt.analyticsvidhya.com/plus?utm_source=datahack&utm_medium=Navbar&utm_campaign=BB" target="_blank" class="nav-link">BlackBelt</a>
+</li>
+<li class="nav-item mr-3">
+<a href="https://datahack.analyticsvidhya.com/jobathon/?utm_source=analyticsvidhya&utm_medium=datahack_navbar&utm_campaign=JOB-A-THON" class="nav-link">Job-A-Thon</a>
+</li>
+
+<li class="nav-item mr-3">
+<a href="/top-competitor" class="nav-link">User Rankings</a>
+</li>
+
+<li class="nav-item mr-2">
+<a href = /approach/top-approaches/ target="_blank" class="nav-link">Top Approaches</a>
+</li>
+</ul>
+<div class="form-inline my-2 my-lg-0">
+<ul class="nav">
+<li class="nav-item av-search-icon">
+<i class="fas fa-search" aria-hidden="true" id="sbtn-id"></i>
+</li>
+<li>
+<a class="btn text-white px-4 av-btn" href="/oidc/authenticate/?next=/contest/genpact-machine-learning-hackathon-1/">Login/Register</a
+              >
+</li>
+</ul>
+</div>
+</div>
+</div>
+</nav>
+</header>
+<div class="av-modal-full-screen" id="searchlink">
+<button type='button' class='close' id="close" aria-label='Close'><span>esc</span></button>
+<div class="modalform">
+<form id="search">
+<input type="hidden" name="csrfmiddlewaretoken" value="tXe1sSl6XZvqJV9eHxcoxnt9yAPTFQejXoemUCAhNRK4pyFghVxy8y3kEndIp4xf">
+<div class="form-group">
+<input type="text" class="form-control" autocomplete="off" id="search-contest-input-id" placeholder="Keyword">
+<button type="submit" class="btn btn-default" id="sbtn"><i class="fas fa-search" aria-hidden="true"></i></button>
+<div id="search_contest_id"></div>
+</div>
+</form>
+</div>
+</div>
+
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+
+  
+  
+    
+    
+  
+
+  //old ga
+  // window.dataLayer = window.dataLayer || [];
+  // function gtag(){dataLayer.push(arguments);}
+  // gtag('js', new Date());
+
+  // gtag('config', 'UA-67190105-1');
+
+</script>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+$(document).ready(function() {
+  $.ajax({
+    url: "/notifications/api/unread_count/",
+    dataType: 'json',
+    type: "GET",
+    success: function(data) {
+      $('#notification_count').html(data.unread_count)
+    },
+    error: function(err) {
+      console.log(err)
+    }
+    });
+    console.log(window.location.pathname == "/notifications/unread/")
+    if(window.location.pathname == "/notifications/unread/") {
+      console.log("inside pathname")
+      ("/notifications/unread/");
+    }
+    
+  $("#search_contest_id p").remove();
+  var index = -1;
+   $('#search-contest-input-id').keydown(function(e) {
+    var pressed=false;
+    if($('#search-contest-input-id').val()==''){
+      index = -1;
+      $("#search_contest_id p").remove();
+      $(this).removeClass('focus-active');
+    }
+    if(event.keyCode==38){
+    // if up arrow key is pressed then decrease the index value.
+      index = index - 1;
+      if(index<0){
+        //if handles the overflow
+        index=0
+      }
+      pressed=true
+    }
+    else if(event.keyCode==40){
+      //if down arrow key is pressed then increase the index value.
+      index = index + 1
+
+      if(index > $('#search_contest_id p').length-1){
+        // it handles the overflow
+        index=0
+      }
+      pressed=true
+    }
+    if(pressed==true){
+      /* if any arrow key is pressed then set the value of
+        that p to the input box... focus is handelled by 'active-search' class
+      */
+      $('#search_contest_id p').removeClass('active-search')
+      $('#search_contest_id p').eq(index).addClass('active-search')
+      $('#search-contest-input-id').val($('#search_contest_id p').eq(index).text())
+    }
+    if(event.keyCode==9){
+      // if tab is pressed then close the dropdown
+      index = -1
+      $('#search_contest_id p').remove()
+      $('#search-contest-input-id').removeClass('focus-active');
+    }
+  });
+
+  $('#search-contest-input-id').keyup(function(e) {
+    /*when ever any key is pressed this event got fired*/
+    if($('#search-contest-input-id').val()==''){
+      //if the input tag is empty then remove the focus form it and do not open the suggestor
+      $("#search_contest_id p").remove();
+      $(this).removeClass('focus-active');
+    }
+    var contest_name = $(this).val();
+    // no ajax for space(32), backspace(8), delete, down-arrow,up-arrow
+    if(contest_name.length > 0 && event.keyCode != 40 && event.keyCode != 38 && event.keyCode != 32 && event.keyCode !=8){
+      $.ajax({
+        type: "POST",
+        url: "/contest/searched-contest",
+        data: {'contest_name': contest_name, csrfmiddlewaretoken:$('#search input[name=csrfmiddlewaretoken]').val()},
+        success:function(response){
+          $("#search_contest_id").empty();
+          var len = response['contests'].length
+          if (len==0){
+            // if length is 0 then close the dropdown css
+            $('#search-contest-input-id').removeClass('focus-active');
+          }
+          else if(len!=0 && event.keyCode==8){
+            //if length not equal to 0 and backspace is pressed
+            $('#search-contest-input-id').addClass('focus-active');
+
+          }
+          else{
+            $('#search-contest-input-id').addClass('focus-active');
+            $('#search-contest-input-id').focus();
+            // $('#search_contest_id').css('width', '50%');
+
+
+          }
+          for (var i=0;i<response['contests'].length;i++){
+            $("<p>"+response['contests'][i]+"</p>").appendTo("#search_contest_id");
+          }
+          $("#search_contest_id p").bind("click",function(){
+            $("#search-contest-input-id").val($(this).text()).focus()
+            $("#search_contest_id").empty();
+            $('#search-contest-input-id').removeClass('focus-active');
+          });
+        }
+      });
+      if(event.keyCode==13) {
+        $('#sbtn').click();
+      }
+    }
+  });
+  $("#sbtn").on("click", function(e){
+    var search = $("#search-contest-input-id").val();
+    var data = {'contest_name': search};
+    $.ajax({
+        type: "POST",
+        url: "/contest/contest-slug",
+        data: data,
+        success:function(response){
+          if (response['contest_slug']) {
+            var url_link = "/contest/"+response['contest_slug']+"/";
+            $("#search").attr("action",url_link);
+            window.location.href = url_link;
+          }
+          else {
+          console.log("Error no such contest found")
+          }
+        },
+        error:function(err){
+          console.log("error");
+        }
+    });
+  });
+  $('#sbtn-id').click(function(e) {
+    $("#searchlink").toggleClass('open');
+  });
+  $('#close').click(function(e) {
+    $("#searchlink").removeClass('open');
+  });
+
+
+});
+
+// Esc click to close form
+$(document).keydown(function(e) {
+  if (e.keyCode == 27) {
+    $("#searchlink").removeClass('open');
+  }
+});
+</script>
+<div class="workspace">
+<div class="modal fade" id="myModal" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#d43f3a;">
+<h4 class="modal-title" id="modal-header" style="color:white;">Error </h4>
+<button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+<p id="modal-body" style="color:black;"></p>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" id="success_modal" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#449d44;">
+<h4 class="modal-title" id="modal-header" style="color:white;">Success </h4>
+<button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+<p id="modal-body" style="color:black;">Payment Received.</p>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" id="myModal1" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#449d44;">
+<h4 class="modal-title" id="modal-header1" style="color:white;">New Data Added</h4>
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+<p id="modal-body1" style="color:black;">Please check the data set. New Data has been added along with the previous one. New file name : Alcohol consumption.</p>
+</div>
+<div class="modal-footer">
+
+<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="warningModal" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#449d44;">
+<h4 class="modal-title" id="warning-modal-header" style="color:white;">New Data Added</h4>
+<button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+<p id="warning-modal-body" style="color:black;">Please check the data set. New Data has been added along with the previous one. New file name : Alcohol consumption.</p>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-success" id="slack_invite">Proceed</button>
+<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="myModal3" role="dialog" style="width:80%;margin-left:10%">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#449d44;">
+<h4 class="modal-title" id="modal-header" style="color:white;">Set Final Submissions</h4>
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body" style="height:400px;overflow-y : auto;width:100%">
+<p id="final_submission_set_success"></p>
+<form action="" method="post" id="form-submissions">
+<input type="hidden" name="csrfmiddlewaretoken" value="tXe1sSl6XZvqJV9eHxcoxnt9yAPTFQejXoemUCAhNRK4pyFghVxy8y3kEndIp4xf">
+<table class="table table-striped" id="" style="padding-left:20px;width:100%;">
+<tr style="height:40px;">
+<th style="" class="col-sm-5">Answer Commit Message</th>
+<th style="" class="col-sm-2">Score</th>
+<th style="" class="col-sm-3 ">Time of Submission</th>
+<th style="" class="col-sm-2">Code File</th>
+<th style="padding-right:10px;">Select</th>
+</tr>
+</table>
+<table class="table-striped" id="data" style="padding-left:20px;width:100%;">
+</table>
+<table id="final_1">
+<tr>
+<td>
+<button type="button" class="btn btn-primary col-sm-6 col-sm-offset-3" style="margin-top:30px;" id="submit">Set final Submission</button>
+</td>
+</tr>
+</table>
+<table id="final_2">
+<tr>
+<td>
+<button type="button" class="btn btn-primary col-sm-6 col-sm-offset-3" style="margin-top:30px;" id="submit_2">Set Submissions to check private score</button>
+</td>
+</tr>
+</table>
+</form>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="similarcontests" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header" style="background-color:#449d44;">
+<h4 class="modal-title" id="modal-header" style="color:white;">Thank you for registering.</h4>
+<a href="/contest/genpact-machine-learning-hackathon-1/" class="close mr-0">&times;</a>
+</div>
+<div class="modal-body">
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="add_approach_model" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="add_approach_modal_label" aria-hidden="true">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="add_approach_modal_label">Add Approach Link</h5>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+<div class="modal-body">
+<input type="hidden" name="csrfmiddlewaretoken" value="tXe1sSl6XZvqJV9eHxcoxnt9yAPTFQejXoemUCAhNRK4pyFghVxy8y3kEndIp4xf">
+<label for="id_approach_link" class="control-label col-lg-2">User approach link</label>
+<div class="controls col-lg-8">
+<input class="textinput textInput form-control" id="id_approach_link" name="approach_link" type="url" value="" data-leaderboard_url="" required>
+</div>
+<p id="add_approach_message_error" class="text-danger"></p>
+</div>
+<div class="modal-footer">
+<button class="btn av-btn text-white px-4" onclick="if (!window.__cfRLUnblockHandlers) return false; submitApproach(this)" data-cf-modified-e0bff3b169be1af0a138f489-="">Create</button>
+</div>
+</div>
+</div>
+</div>
+
+<section class="av-contest-details-page">
+
+<div class="container">
+<div class="row">
+<div class="card">
+<picture>
+<source media="(max-width: 767px)" srcset="https://datahack-prod.s3.amazonaws.com/contest_icon/food_500x250_f9NCtXM.jpg" class="card-img-top">
+<img loading='lazy' src="https://datahack-prod.s3.ap-south-1.amazonaws.com/__sized__/contest_cover/food_1920x480_9XIpdm8-thumbnail-1200x1200-70.jpg" alt="Flowers" class="card-img-top">
+</picture>
+<div class="card-header">
+<div class="alert-box">
+</div>
+<div class="card-header-info">
+<h1 class="card-title">Food Demand Forecasting</h1>
+<div class="card-header-contest-info">
+<span>
+<i class="fas fa-map-marker-alt"></i>
+Online
+</span>
+<span>
+<i class="far fa-calendar-alt"></i>
+28-01-2019 10:00 AM to 31-12-2022 11:59 PM
+</span>
+</div>
+<ul class="m-0 p-0 mt-2">
+<li>
+<span>
+<i class="fas fa-user"></i>
+13606
+</span>
+<p>Registered</p>
+</li>
+<li>
+<span>
+<i class="fas fa-trophy"></i>
+Practice Problem
+</span>
+<p>Prizes</p>
+</li>
+</ul>
+</div>
+<div class="card-header-timer">
+<div id="countdown-timer"></div>
+<a class="btn av-btn-red px-4 text-uppercase mt-3" id="participate" href="/oidc/authenticate/?next=/contest/genpact-machine-learning-hackathon-1/register">Register</a>
+</div>
+</div>
+<div class="spinner-border text-primary d-tabel mx-auto mt-3 mb-3" role="status" id="av-api-response-loader" style="display:none;">
+<span class="sr-only">Loading...</span>
+</div>
+<div class="card-body">
+
+<div class="card-body-tabs">
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+<li class="nav-item">
+<a class="nav-link active" id="About-tab" data-toggle="tab" href="#About" role="tab" aria-controls="About" aria-selected="true" onclick="if (!window.__cfRLUnblockHandlers) return false; pushTabDetailsToDataLater('About Tab', 'Food Demand Forecasting', 'practice')" data-cf-modified-e0bff3b169be1af0a138f489-="">About</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" id="LeaderBoard-tab" data-toggle="tab" href="#LeaderBoard" role="tab" aria-controls="LeaderBoard" aria-selected="false" onclick="if (!window.__cfRLUnblockHandlers) return false; 
+                          showLeaderboard(this)" data-cf-modified-e0bff3b169be1af0a138f489-="">Leaderboard</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" id="Discuss-tab" data-toggle="tab" href="#DiscussTab" role="tab" aria-controls="DiscussTab" aria-selected="false" onclick="if (!window.__cfRLUnblockHandlers) return false; 
+                    showDiscussions(this)" data-cf-modified-e0bff3b169be1af0a138f489-="">Discuss</a>
+</li>
+</ul>
+</div>
+
+<div class="tab-content card-body-contents" id="myTabContent">
+<div class="tab-pane fade show active" id="About" role="tabpanel" aria-labelledby="about-tab">
+<div class="row">
+<div class="col-lg-8 col-md-8 col-sm-12">
+<p>Demand forecasting is a key component to every growing online business. Without proper demand forecasting processes in place, it can be nearly impossible to have the right amount of stock on hand at any given time. A food delivery service has to deal with a lot of perishable raw materials which makes it all the more important for such a company to accurately forecast daily and weekly demand.</p>
+<p>Too much inventory in the warehouse means more risk of wastage, and not enough could lead to out-of-stocks &mdash; and push customers to seek solutions from your competitors. In this challenge, get a taste of demand forecasting challenge using a real dataset.</p>
+<h3>Data Science Resources</h3>
+<ul>
+<li><span><span>Are you a complete beginner? If yes, you can check out our latest <a href="https://trainings.analyticsvidhya.com/courses/course-v1:AnalyticsVidhya+DS101+2018T2/about?utm_source=practice_problem_Food_Demand_Forecasting_Challenge&amp;utm_medium=Datahack"><span>'Intro to Data Science'</a><span> course to kickstart your journey in data science.</li>
+<li><span><span>Refer this <a href="https://www.analyticsvidhya.com/blog/2019/01/introduction-time-series-classification/"><span>comprehensive guide</a><span> on Time Series Classification with its implementation in python.</li>
+<li><span>You can also refer this <a href="https://www.analyticsvidhya.com/blog/2018/09/multivariate-time-series-guide-forecasting-modeling-python-codes/"><span>guide</a><span> on Forecasting and Modeling that will be helpful in solving this problem.</li>
+</ul>
+<h3>Rules</h3>
+<ul>
+<li>One person cannot participate with more than one user accounts.</li>
+<li>This is proprietary dataset, you can only use for this hackathon (Analytics Vidhya Datahack Platform) not for any other reuse</li>
+<li>You are free to use any tool and machine you have rightful access to.</li>
+<li>You can use any programming language or statistical software.</li>
+<li>You are free to use solution checker as many times as you want.</li>
+</ul>
+<h3>FAQs</h3>
+<p><strong>1. Are there any prizes/AV Points for this contest?</strong></p>
+<p>This contest is purely for learning and practicing purpose and hence no participant is eligible for prize or AV points.</p>
+<p><strong>2. Can I share my approach/code?</strong></p>
+<p>Absolutely. You are encouraged to share your approach and code file with the community. There is even a facility at the leaderboard to share the link to your code/solution description.</p>
+<p><strong>3. I am facing a technical issue with the platform/have a doubt regarding the problem statement. Where can I get support?</strong></p>
+<p>Post your query on discussion forum at the thread for this problem, discussion threads are given at the bottom of this page. You could also join the AV slack channel by clicking on 'Join Slack Live Chat' button and ask your query at channel: practice_problems.</p>
+<input type="hidden" name="purpose" id="purpose" value="practice">
+</div>
+
+<div class="col-lg-4 col-md-4 col-sm-12">
+<div class="contest-card-right-side sticky-top">
+<div style="margin-top:20px; margin-bottom: 5px;">
+
+<div class="modal fade" id="share-contest-modal" tabindex="-1" role="dialog" aria-labelledby="share-contest-modal-CenterTitle" aria-hidden="true">
+<div class="modal-dialog fixed-top" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">Challenge a friend</h5>
+</div>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<span>esc</span>
+</button>
+<div class="modal-body">
+<div id="show_contest_field" class="showContestField">
+<input type="text" class="form-control" id="share_with_others" name="search_user" autocomplete="off" placeholder="Enter Name" />
+<button type="submit" class="btn btn-default" id="share_contest_button">Share</button>
+<div id="users_list_share" class="showUsers"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div id="datahack-avbanner">
+<a href=""><img loading='lazy' class="" src="" alt="ALT" style="display: none;"></a>
+</div>
+</div>
+<script type="e0bff3b169be1af0a138f489-text/javascript" src="/static/js/debounce.09949f9f21c3.js"></script>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+ $(document).ready(function() {
+  $("#users_list_share p").remove();
+  var index = -1;
+  $('#share_with_others').keydown(function(e){
+    var pressed=false
+    if($('#share_with_others').val()==''){
+      $("#users_list_share p").remove();
+      $(this).removeClass('focus-active');
+    }
+    if(e.keyCode==38){
+      // if up arrow key is pressed then decrease the index value.
+      index--;
+      if(index<0){
+        //if handles the overflow
+        index=0
+      }
+      pressed=true
+    }
+    else if(e.keyCode==40){
+      //if down arrow key is pressed then increase the index value.
+      index++
+      if(index > $('#users_list_share p').length-1){
+        // it handles the overflow
+        index=0
+      }
+      pressed=true
+    }
+    if(pressed==true){
+      /* if any arrow key is pressed then set the value of
+        that div to the input box... focus is handelled by 'active-search' class
+       */
+      $('#users_list_share p').removeClass('active-search')
+      $('#users_list_share p').eq(index).addClass('active-search')
+      $('#share_with_others').val($('#users_list_share p').eq(index).text())
+    }
+    if(e.keyCode==9){
+      // if tab is pressed then close the dropdown
+      $('#users_list_share p').remove()
+      $('#share_with_others').removeClass('focus-active');
+    }
+  });
+  $('#share_with_others').keyup(function(e){
+      /*when ever any key is pressed this event got fired*/
+      if($('#share_with_others').val()==''){
+        //if the input tag is empty then remove the focus form it and do not open the suggestor
+        $("#users_list_share p").remove();
+        $(this).removeClass('focus-active');
+      }
+      var user_name = $(this).val();
+      // no ajax for space(32), backspace(8), delete, down-arrow,up-arrow
+      if(user_name.length > 0 && e.keyCode != 40 && e.keyCode != 38 && e.keyCode != 32 && e.keyCode !=8){
+        $.ajax({
+          type: "POST",
+          url: "/contest/genpact-machine-learning-hackathon-1/search_mates/",
+          data: {user_name: user_name},
+          success:function(response){
+           $("#users_list_share").empty();
+           var len = response['users'].length
+            if (len==0){
+              // if length is 0 then close the dropdown css
+              $('#share_with_others').removeClass('focus-active');
+            }
+            else if(len!=0 && e.keyCode==8){
+              //if length not equal to 0 and backspace is pressed
+              $('#share_with_others').addClass('focus-active');
+            }
+            else{
+              $('#share_with_others').addClass('focus-active');
+              $('#share_with_others').focus()
+
+            }
+            for (var i=0;i<response['users'].length;i++){
+              $("<p>"+response['users'][i].av_discuss_user_id+"</p>").appendTo("#users_list_share");
+            }
+            $("#users_list_share p").bind("click",function(){
+              $("#share_with_others").val($(this).text()).focus()
+              $("#users_list_share").empty();
+              $('#share_with_others').removeClass('focus-active');
+            });
+          }
+        });
+        if(event.keyCode==13) {
+        $('#share_contest_button').click();
+      }
+      }
+  });
+    $("#slack_invite_av_btn").on("click", function(){
+      console.log("slack invite button was clicked")
+      $('#av-slack-preloader').css("display", "block")
+      $('#slack_invite_av_btn').css("display", "none")
+      $('#warningModal').modal('hide');
+      var data = {"email":"", "first_name":"", "csrfmiddlewaretoken":"tXe1sSl6XZvqJV9eHxcoxnt9yAPTFQejXoemUCAhNRK4pyFghVxy8y3kEndIp4xf"};
+      $.ajax({
+        type : "POST",
+        url : "/slack",
+        data : data,
+        success : function(data)
+        {
+          $('#av-slack-preloader').css("display", "none")
+          $('#slack_invite_av_btn').css("display", "block")
+          if (data["data"]["ok"])
+          {
+            $("#modal-body1").html("You have been successfully invited. Please check your inbox for slack invite");
+            $("#modal-header1").html("Success");
+            $('#myModal1').modal('show');
+          }
+          else{
+            console.log("error was ", data["data"]);
+            if (data["data"]["ok"] == false) {
+              $("#modal-body").html(data["data"]["error"]);
+            } else {
+              $("#modal-body").html("Some error occurred. Please try again later");
+            }
+
+            $('#myModal').modal('show');
+          }
+        }
+      });
+    });
+
+    $("#warning_message_slack").click(function(){
+        $("#warning-modal-body").html("We cannot ensure your anonymity on slack. click to proceed anyways.");
+        $("#warning-modal-header").html("Warning");
+        $('#warningModal').modal('show');
+    });
+    $("#warning_message_share_challenge").click(function(){
+        $("#warning-modal-body").html("You cannot challenge a friend as you are anonymous user. click to proceed anyways.");
+        $("#warning-modal-header").html("Warning");
+        $('#warningModal').modal('show');
+    });
+  });
+$("#share_contest_button").click(function(){
+  var user_name = $("#share_with_others").val();
+  $("#share-contest-modal").modal("hide");
+  $.ajax({
+    type: "POST",
+    data: {user_name: user_name},
+    url: "/contest/genpact-machine-learning-hackathon-1/share/",
+    success:function(response){
+      console.log("in success share");
+      // alert("Mail sent successfully")
+      if(response['requested_user_status'] == 0) {
+        alert("No such user found");
+      }
+    },
+    error:function(err){
+      console.log("in error share");
+    }
+  });
+  // var u = ''
+  // console.log('u', u)
+})
+ </script>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+ function editor_platform(){
+   window.open("https://editor.analyticsvidhya.com/", "_blank");
+ }
+ </script>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="ProblemStatement" role="tabpanel" aria-labelledby="ProblemStatement-tab">
+<p>Please register/login to participate in the contest</p>
+</div>
+<div class="tab-pane fade" id="SolutionChecker" role="tabpanel" aria-labelledby="SolutionChecker-tab">
+<p>Please register to participate in the contest</p>
+<script type="e0bff3b169be1af0a138f489-text/javascript" charset="utf-8" async defer>
+
+function link_display() {
+  document.getElementById("sub1").disabled = false;
+};
+
+function file_checker(url_name) {
+
+  $('#code-file-placeholder-name').html('')
+  $('#solution-file-placeholder-name').html('')
+     var solution_filename = $("#solution_file1").val();
+     var code_file = $("#code_file1").val();
+     var code_link = '';
+
+     if($("#show_code_lb_query").val() == 'True') {
+        code_link = $("input[name='code_link_display']:checked").val();
+     } else {
+        code_link = 'False';
+     }
+
+     var commit_message = $("#message1").val();
+     var solution_file_ext = $('#solution_file1').val().split('.').pop().toLowerCase();
+
+     
+
+     if(solution_filename == "") {
+          $("#modal-body").html("Solution File is required. Please upload solution File");
+          $('#myModal').modal('show');
+     }
+     else {
+         
+            if($.inArray('.' + solution_file_ext, ['.csv']) == -1) {
+                 $("#modal-body").html("Invalid Solution File . Please upload a valid solution File. <br/>Only " + ".csv" + " files are allowed");
+                 $('#myModal').modal('show');
+                 return false ;
+            }
+         
+
+    if (commit_message == "")
+     {
+          $("#modal-body").html("Message is required. Please add a message to your Solution");
+          $('#myModal').modal('show');
+     }
+     else
+     {
+    if(code_link != 'True' && code_link != 'False' && ($.inArray(purpose, ["ama", "case_study", "blogathon", "excel", "learnup", "mcq", "visualize", "workshop"] ) > -1)){
+          $("#modal-body").html("Please select Yes/NO to question <strong>Do you want to show your code on leaderboard?<strong> ");
+          $('#myModal').modal('show');
+     }
+     else
+     {
+          var a = "<img loading='lazy' src = 'https://datahack-prod.s3.ap-south-1.amazonaws.com/profile_photos/oie_91149170D2m4jGB.gif' class = '' style = 'width:250px;margin-left:30%'><div class='progress progress-striped active col-md-12 col-sm-12 col-xs-12 col-lg-12'><div class='progress-bar' role='progressbar' aria-valuenow='0' aria-valuemin='0' aria-valuemax='100'></div></div>"
+          $("#modal-body1").html(a)
+          $("#modal-header1").html("Uploading");
+          $('#myModal1').modal('show');
+          // $('#linkedin-screenshot').addClass('d-none');
+          upload(url_name);
+     }
+     }
+     }
+ }
+
+   function setCodeFilePath(obj) {
+      if(obj.files) {
+        $('#code-file-placeholder-name').html(obj.files[0].name)
+      }
+
+   }
+
+  function setSolutionFilePath(obj) {
+    if(obj.files) {
+      $('#solution-file-placeholder-name').html(obj.files[0].name)
+    }
+  }
+
+  $(document).ready(function() {
+
+    console.log("Document ready was called");
+    
+
+      $('#myModal1').modal('hide');
+
+    
+  });
+
+  function upload(url_name){
+    var data = new FormData($('#form1').get(0));
+    data["csrfmiddlewaretoken"] = "tXe1sSl6XZvqJV9eHxcoxnt9yAPTFQejXoemUCAhNRK4pyFghVxy8y3kEndIp4xf";
+    
+      var lnk = "/problem/98EVN7QSC11WU9G/add-programming-answer/"
+    
+    $.ajax({
+      xhr: function()
+      {
+        var xhr = new window.XMLHttpRequest();
+        //Upload progress
+        xhr.upload.addEventListener("progress", function(evt){
+          if (evt.lengthComputable) {
+            var percentComplete = evt.loaded * 100/ evt.total ;
+            $('.progress-bar').css('width', percentComplete+'%').attr('aria-valuenow', percentComplete);
+          }
+        }, false);
+        //Download progress
+        xhr.addEventListener("progress", function(evt){
+          if (evt.lengthComputable) {
+            var percentComplete = evt.loaded / evt.total;
+          }
+        }, false);
+
+        return xhr;
+      },
+      url: lnk,
+      type: 'POST',
+      data: data,
+      cache: false,
+      processData: false,
+      contentType: false,
+      success: function(data) {
+        $(".hid").css({"display":"none"});
+        $("#solution_file1").val("");
+        $("#message1").val("");
+        if(data["error"])
+        {
+          $("#modal-body").html(data["message"]);
+
+          setTimeout(function() {
+            $('#myModal').modal('show');
+            $('#myModal1').modal('hide');
+          },1000);
+
+        }
+        else{
+          $('#SolutionChecker').html(data)
+        }
+      },
+      error : function(data){
+        $(".hid").css({"display":"none"});
+        $("#solution_file1").val("");
+        $("#message1").val("");
+        $("#modal-body").html("Some error occured. Please try after some time.");
+        setTimeout(function() {
+          $('#myModal').modal('show');
+          $('#myModal1').modal('hide');
+        },1000);
+
+      }
+    });
+   }
+
+</script>
+</div>
+<div class="tab-pane fade" id="DiscussTab" role="tabpanel" aria-labelledby="Discuss-tab">
+</div>
+<div class="tab-pane fade" id="MentorshipTab" role="tabpanel" aria-labelledby="Mentorship-tab">
+</div>
+<div class="tab-pane fade" id="MySubmissions" role="tabpanel" aria-labelledby="MySubmissions-tab">
+</div>
+<div class="tab-pane fade" id="LeaderBoard" role="tabpanel" aria-labelledby="LeaderBoard-tab">
+</div>
+<div class="tab-pane fade" id="SkillTestLeaderBoard" role="tabpanel" aria-labelledby="SkillTestLeaderBoard-tab">
+</div>
+<div class="tab-pane fade" id="Team" role="tabpanel" aria-labelledby="Team-tab">
+<p>Please register to participate in the contest</p>
+</div>
+<div class="tab-pane fade" id="StatusTab" role="tabpanel" aria-labelledby="Status-tab">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="modal fade full-modal" id="interviewModal" tabindex="-1" role="dialog" aria-labelledby="interviewModalLabel" aria-hidden="true">
+<div class="modal-dialog fixed-top modal-dialog-scrollable" role="document">
+<div class="modal-content" style="min-height: 100vh;">
+<div class="modal-header">
+<h5 class="modal-title" id="interviewModalLabel">Please select your top five prefered companies</h5>
+</div>
+<div class="modal-body">
+<div class="checkbox-row">
+</div>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn av-btn-outline px-4 mt-3 text-white" id="save-company-preference" disabled>Save</button>
+<button type="button" class="btn av-btn-outline px-4 mt-3 text-white" id="save-company-preference-and-redirect" disabled>Save & Start</button>
+<button type="button" class="btn av-btn-outline px-4 mt-3 text-white" data-dismiss="modal" aria-label="Close">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="container">
+<div class="row">
+</div>
+</div>
+<a href="https://www.analyticsvidhya.com/contact/" target="_blank" class="btn text-white px-2 av-btn" id="av_Feedback">Support <i class="fas fa-comment-dots"></i></a>
+</div>
+<footer>
+<div class="container">
+<div class="row">
+<div class="col-lg-4 col-md-4 col-sm-12">
+<a href="https://www.analyticsvidhya.com/">
+<img loading='lazy' src="https://av-public-assets.s3.ap-south-1.amazonaws.com/logos/AV_logo_wite.png" alt='Analytics Vidhya' width="85%">
+</a>
+<div class="download-av-app">
+<h6 class="d-flex align-items-center">Download App</h6>
+<a rel="nofollow" href="https://play.google.com/store/apps/details?id=com.analyticsvidhya.android" target="_blank">
+<img loading='lazy' src="/static/images/play_store_icon.49aadc124788.svg" alt='play store'>
+</a>
+<a rel="nofollow" href="https://apps.apple.com/us/app/analytics-vidhya/id1470025572" target="_blank">
+<img loading='lazy' src="/static/images/app_Store_icon.9eda9dd200b5.svg" alt='App Store'>
+</a>
+</div>
+</div>
+<div class="col-lg-8 col-md-8 col-sm-12">
+<div class="av-links">
+<ul>
+<li>
+<h6>Analytics Vidhya</h6>
+<a href="https://www.analyticsvidhya.com/about/">About Us</a>
+<a href="https://www.analyticsvidhya.com/team/">Our Team</a>
+<a href="https://www.analyticsvidhya.com/careers/">Careers</a>
+<a href="https://www.analyticsvidhya.com/contact/">Support</a>
+</li>
+<li>
+<h6>Data Scientists</h6>
+<a href="https://www.analyticsvidhya.com/blog/">Blog</a>
+<a href="https://datahack.analyticsvidhya.com/">Hackathon</a>
+<a href="https://discuss.analyticsvidhya.com/">Discussions</a>
+<a href="https://www.analyticsvidhya.com/jobs/">Apply Jobs</a>
+</li>
+<li>
+<h6>Companies</h6>
+<a href="https://www.analyticsvidhya.com/corporate/">Post Jobs</a>
+<a href="https://courses.analyticsvidhya.com/">Trainings</a>
+<a href="https://datahack.analyticsvidhya.com/">Hiring Hackathons</a>
+<a href="https://www.analyticsvidhya.com/contact/">Advertising</a>
+</li>
+<li>
+<h6>Visit us</h6>
+<div class="av-get-social">
+<a rel="nofollow" href="https://www.facebook.com/AnalyticsVidhya/" target="_blank" class="social-visit fb mr-2">
+<i class="fab fa-facebook-f"></i>
+</a>
+<a rel="nofollow" href="https://www.linkedin.com/company/analytics-vidhya/" target="_blank" class="social-visit in mr-2">
+<i class="fab fa-linkedin-in"></i>
+</a>
+<a rel="nofollow" href="https://www.youtube.com/channel/UCH6gDteHtH4hg3o2343iObA" target="_blank" class="social-visit utub mr-2">
+<i class="fab fa-youtube"></i>
+</a>
+<a rel="nofollow" href="https://twitter.com/analyticsvidhya" target="_blank" class="social-visit tw mr-2">
+<i class="fab fa-twitter"></i>
+</a>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer-link-bottom">
+<div class="container">
+<div class="row">
+<div class="mr-auto">
+<p>© Copyright 2013-2022 Analytics Vidhya.</p>
+</div>
+<div class="ml-auto">
+<a href="https://www.analyticsvidhya.com/privacy-policy/" target="_blank">Privacy Policy</a>
+<a href="https://www.analyticsvidhya.com/terms/" target="_blank">Terms of Use</a>
+<a href="https://www.analyticsvidhya.com/refund-policy/" target="_blank">Refund Policy</a>
+</div>
+</div>
+</div>
+</div>
+
+</footer>
+<form id="logout-form" action="/oidc/logout/" method="post"><input type="hidden" name="csrfmiddlewaretoken" value="tXe1sSl6XZvqJV9eHxcoxnt9yAPTFQejXoemUCAhNRK4pyFghVxy8y3kEndIp4xf">
+</form>
+<script src="/static/CACHE/js/output.3639002ecf51.js" type="e0bff3b169be1af0a138f489-text/javascript"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.1/umd/popper.min.js" type="e0bff3b169be1af0a138f489-text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" type="e0bff3b169be1af0a138f489-text/javascript"></script>
+<script src="/static/tinymce/js/tinymce/tinymce.min.js" type="e0bff3b169be1af0a138f489-text/javascript"></script>
+<script type="e0bff3b169be1af0a138f489-text/javascript" src="/static/js/mention.plugin.36350daebc30.js"></script>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+var leaderboardSocket = ''
+var discussSocket = ''
+$(document).ready(function(){
+  
+  
+  // store the currently selected tab in the hash value
+  $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+    var id = $(e.target).attr("href").substr(1);
+    window.location.hash = id;
+  });
+  // on load of the page: switch to the currently selected tab
+  var activeTab = window.location.hash;
+  if(activeTab=="#LeaderBoard"){
+      $('#LeaderBoard-tab').trigger("click");
+      $('#myTab a[href="' + activeTab + '"]').tab('show');
+  } else if (activeTab == "#MySubmissions") {
+    $('#MySubmissions-tab').trigger("click");
+    $('#myTab a[href="' + activeTab + '"]').tab('show');
+  }else if (activeTab == "#DiscussTab") {
+    $('#Discuss-tab').trigger("click");
+    $('#myTab a[href="' + activeTab + '"]').tab('show');
+  }else if(activeTab == "#MentorshipTab"){
+    $('#Mentorship-tab').trigger("click");
+    $('#myTab a[href="' + activeTab + '"]').tab('show');
+  }else if(activeTab == "#StatusTab"){
+    $('#Status-tab').trigger("click");
+    $('#myTab a[href="' + activeTab + '"]').tab('show');
+  }else if(activeTab == "#SkillTestLeaderBoard"){
+    $('#SkillTestLeaderBoard-tab').trigger("click");
+    $('#myTab a[href="' + activeTab + '"]').tab('show');
+  }
+  else {
+    $('#myTab a[href="' + activeTab + '"]').tab('show');
+  }
+  if($("#terms_and_cond")){
+    $("#terms_and_cond").modal("show");
+  }
+  // modal to display similar contests
+  
+    $('#similarcontests').modal("hide");
+  
+
+});
+
+$('#MySubmissions-tab').click(function() {
+   console.log("My submissions tab was clicked")
+   var loader = document.getElementById('av-api-response-loader');
+   loader.style.display = "block";
+
+   $('#MySubmissions').html('').load(
+     "/contest/genpact-machine-learning-hackathon-1/get_submissions_list"
+   )
+   dataLayer.push({
+     event:"datalayer_click",
+    'datahack_DetailPage_tab_tabName': 'MySubmissions Tab',
+    'datahack_DetailPage_tab_contestName': 'Food Demand Forecasting',
+    'datahack_DetailPage_tab_contestPurpose': 'practice'
+  });
+
+});
+
+function showDiscussions(obj) {
+  console.log("inside discuss")
+  var loader = document.getElementById('av-api-response-loader');
+  loader.style.display = "block";
+  contest_slug = 'genpact-machine-learning-hackathon-1'
+  contest_id = '449'
+  discussSocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') +window.location.host+'/ws/discussion/'+contest_id+'/'+contest_slug+'/');
+  console.log(discussSocket)
+  $('#DiscussTab').load("/contest/genpact-machine-learning-hackathon-1/discussions/None/")
+  dataLayer.push({
+    event:"datalayer_click",
+    'datahack_DetailPage_tab_tabName': 'DiscussTab',
+    'datahack_DetailPage_tab_contestName': 'Food Demand Forecasting',
+    'datahack_DetailPage_tab_contestPurpose': 'practice'
+  });
+
+}
+
+function showMentors(obj) {
+  console.log("inside mentors")
+  var loader = document.getElementById('av-api-response-loader');
+  loader.style.display = "block";
+  $('#MentorshipTab').load("/contest/genpact-machine-learning-hackathon-1/superpro-approved-listing-page/1/")
+  dataLayer.push({
+    event:"datalayer_click",
+    'datahack_DetailPage_tab_tabName': 'MentorshipTab',
+    'datahack_DetailPage_tab_contestName': 'Food Demand Forecasting',
+    'datahack_DetailPage_tab_contestPurpose': 'practice'
+  });
+
+}
+
+function showhpstatustab(obj){
+  console.log("inside status tabs")
+  var loader = document.getElementById('av-api-response-loader');
+  loader.style.display = "block";
+  $('#StatusTab').load("/contest/genpact-machine-learning-hackathon-1/jobathon-profile-status-tab/1/")
+  dataLayer.push({
+    event:"datalayer_click",
+    'datahack_DetailPage_tab_tabName': 'StatusTab',
+    'datahack_DetailPage_tab_contestName': 'Food Demand Forecasting',
+    'datahack_DetailPage_tab_contestPurpose': 'practice'
+  });
+
+}
+
+function showLeaderboard(obj) {
+  var loader = document.getElementById('av-api-response-loader');
+  loader.style.display = "block";
+  
+    
+      var contest_slug = "genpact-machine-learning-hackathon-1"
+      leaderboardSocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://')+window.location.host+'/ws/leaderboard/'+contest_slug+'/');
+      console.log("Contest has not expired, so Public leaderboard is called")
+      console.log(leaderboardSocket)
+      $('#LeaderBoard').load( "/contest/genpact-machine-learning-hackathon-1/lb/1/")
+    
+  
+  dataLayer.push({
+    event:"datalayer_click",
+    'datahack_DetailPage_tab_tabName': 'LeaderBoardTab',
+    'datahack_DetailPage_tab_contestName': 'Food Demand Forecasting',
+    'datahack_DetailPage_tab_contestPurpose': 'practice'
+  });
+
+}
+function showSkillTestLeaderBoard(obj) {
+  var loader = document.getElementById('av-api-response-loader');
+  loader.style.display = "block";
+  $('#SkillTestLeaderBoard').load( "/leaderboard/genpact-machine-learning-hackathon-1/skill-lb/1/")
+  dataLayer.push({
+    event:"datalayer_click",
+    'datahack_DetailPage_tab_tabName': 'SkillTestLeaderBoardTab',
+    'datahack_DetailPage_tab_contestName': 'Food Demand Forecasting',
+    'datahack_DetailPage_tab_contestPurpose': 'practice'
+  });
+
+}
+function pushTabDetailsToDataLater(tab_name, contest_name, contest_purpose){
+  dataLayer.push({
+    event:"datalayer_click",
+    'datahack_DetailPage_tab_tabName': tab_name,
+    'datahack_DetailPage_tab_contestName': contest_name,
+    'datahack_DetailPage_tab_contestPurpose': contest_purpose
+  });
+  }
+
+// <!--Check if following function is being used. Remove if not-->
+// <!--function page_reload(argument) {-->
+// <!--  window.location.reload();-->
+// <!--}-->
+
+// <!--function preference_selector(){-->
+// <!--  var checkboxes = document.getElementsByName('preference');-->
+// <!--  var slugs = [];-->
+// <!--  for (var i=0; i<checkboxes.length; i++) {-->
+// <!--     // And stick the checked ones onto an array...-->
+// <!--     if (checkboxes[i].checked) {-->
+// <!--        slugs.push(checkboxes[i].value);-->
+// <!--     }-->
+// <!--  }-->
+// <!--  var slug = {"slugs":slugs,-->
+// <!--                "csrfmiddlewaretoken":"tXe1sSl6XZvqJV9eHxcoxnt9yAPTFQejXoemUCAhNRK4pyFghVxy8y3kEndIp4xf"-->
+// <!--                };-->
+
+// <!--  $.ajax({-->
+// <!--   type : 'POST',-->
+// <!--   url : '/contest/bulkparticipate/',-->
+// <!--   dataType : 'json',-->
+// <!--   data : slug,-->
+// <!--   success : function(data){-->
+// <!--    if (data["error"]){-->
+// <!--            $("#similarcontests").modal("hide");-->
+// <!--            $("#modal-header1").html("Error");-->
+// <!--            $("#modal-body").html("Please complete your profile.");-->
+// <!--            $('#myModal').modal('show');-->
+// <!--         }-->
+// <!--        else{-->
+// <!--          if(data["not_registered"].length != 0){-->
+// <!--          $("#similarcontests").modal("hide");-->
+// <!--            $("#modal-header1").html("Error");-->
+// <!--            $("#modal-body").html("Please try to register \-->
+// <!--                                   again after updating your profile \-->
+// <!--                                   for "+data["not_registered"]);-->
+// <!--            $('#myModal').modal('show');-->
+// <!--          }-->
+// <!--          else{-->
+// <!--          window.location.reload();-->
+// <!--        }-->
+// <!--          }-->
+// <!--   }-->
+// <!-- });-->
+// <!--}-->
+var purpose = $('#purpose').attr('value');
+var sp_purpose = ['visualize','excel'];
+var cd_purpose = ['workshop','normal','learnup','practice','case_study','mcq','hiring', 'ama'];
+var lb_purpose = ['normal','practice','hiring'];
+
+if ($.inArray(purpose, cd_purpose ) > -1)
+{
+  $(document).ready(function(){
+  $.ajax({
+    type: "GET",
+    url: "./countdowns/",
+    success: function(result){
+
+      obj = JSON.parse(result)
+      if (obj.time_to_start > 0){
+        var time_remaining = obj.time_to_start;
+        message = "<div class='mckinsey-data-status'><span class='text-uppercase'>starts in</span></div>";
+      }
+      else if (obj.time_to_end > 0){
+        message = "<div class='mckinsey-data-status'><span class='text-uppercase'> ends in </span></div>";
+        var time_remaining = obj.time_to_end;
+      }
+
+      if (time_remaining ){
+      window.setInterval(function(){
+
+          time_remaining =  time_remaining - 1
+          if (time_remaining==0){
+            location.reload(true);
+          }
+          days = (Math.floor(time_remaining/86400));
+          hours = (Math.floor((time_remaining-days*86400)/3600));
+          minutes = (Math.floor((time_remaining % 3600)/60));
+          seconds = (Math.floor(time_remaining%60));
+          if (days < 1)
+          {
+            <!-- message_text = message + hours + "<small>hours</small>: " + minutes + "<small>minutes</small>: " + seconds  + "<small>seconds</small>"; -->
+            message_text = message + "<p>"
+              + "<span>" + hours + " <span>hours</span> </span>"
+              + "<span>" + minutes + " <span>min</span> </span>"
+              + "<span>" + seconds + " <span>sec</span> </span>"
+            + "</p>";
+          }
+          else{
+            <!-- message_text = message + days + "<small>days</small>: "  + hours + "<small>hours</small>: " + minutes + "<small>minutes</small>: " + seconds  + "<small>seconds</small>"; -->
+            message_text = message + "<p>"
+                + "<span>" + days + "<span>days</span> </span>"
+                + "<span>" + hours + " <span>hours</span> </span>"
+                + "<span>" + minutes + " <span>min</span> </span>"
+                <!-- + "<span>" + seconds + "  <span>sec</span> </span>" -->
+              + "</p>";
+          }
+          $("#countdown-timer").html( "<center>" + message_text + "</center>" );
+      }, 1000);
+      }
+
+    }
+  });
+});
+
+}
+
+if ($.inArray(purpose, sp_purpose ) > -1)
+{
+  $("#submit").click(function(){
+  var data = new FormData($('#form-submissions').get(0));
+  $.ajax({
+      url: '/problem/genpact-machine-learning-hackathon-1/update-final-solution/',
+      type: 'POST',
+      data: data,
+      cache: false,
+      processData: false,
+      contentType: false,
+      success: function(data) {
+         if(data["error"] == "true")
+         {
+            $("#myModal3").modal("hide");
+            $("#modal-header1").html("Error");
+            $("#modal-body").html(data["message"]);
+            $('#myModal').modal('show');
+         }
+         else{
+             $("#myModal3").modal("hide");
+             $("#modal-header1").html("Success");
+             $("#modal-body1").html("Your Final Sumbission has been set successfully.");
+             $('#myModal1').modal('show');
+         }
+      },
+      error : function(data){
+            $("#myModal3").modal("hide");
+            $("#modal-body").html("Unable to connect to backend");
+            $('#myModal').modal('show');
+      }
+  });
+});
+
+$("#submit_2").click(function(){
+  var data = new FormData($('#form-submissions').get(0));
+  $.ajax({
+      url: '/problem/genpact-machine-learning-hackathon-1/update-multiple-final-solution/',
+      type: 'POST',
+      data: data,
+      cache: false,
+      processData: false,
+      contentType: false,
+      success: function(data) {
+         if(data["error"] == "true")
+         {
+            $("#myModal3").modal("hide");
+            $("#modal-header1").html("Error");
+            $("#modal-body").html(data["message"]);
+            $('#myModal').modal('show');
+         }
+         else{
+            $("#myModal3").modal("hide");
+            $("#modal-header1").html("Success");
+            $("#modal-body1").html(data["message"]);
+            $("#myModal1").modal('show');         
+         }
+      },
+      error : function(data){
+            $("#myModal3").modal("hide");
+            $("#modal-body").html("Some error occured");
+            $('#myModal').modal('show');
+      }
+  });
+});
+
+}
+else{
+  $("#selection_done").click(function(){
+  var message = "Are you sure you want to set this submission as your final submission. If yes, then you'll have to add your code file for this submission. ";
+  var user_confirmation  = confirm(message);
+  if (user_confirmation)
+  {
+     add_code_file_form();
+  }
+
+});
+$("#submit").click(function(){
+  var data = new FormData($('#form-submissions').get(0));
+  $.ajax({
+      url: '/problem/genpact-machine-learning-hackathon-1/update-final-solution/',
+      type: 'POST',
+      data: data,
+      cache: false,
+      processData: false,
+      contentType: false,
+      success: function(data) {
+         if(data["error"] == "true")
+         {
+            $("#myModal3").modal("hide");
+            $("#modal-header1").html("Error");
+            $("#modal-body").html(data["message"]);
+            $('#myModal').modal('show');
+         }
+         else{
+             <!-- fetch_final_for_multiple_selections(); -->
+             $("#myModal3").modal("hide");
+             $("#modal-header1").html("Success");
+             $("#modal-body1").html(data["message"]);
+             $('#myModal1').modal('show');
+         }
+      },
+      error : function(data){
+            $("#myModal3").modal("hide");
+            $("#modal-body").html("Unable to connect to backend");
+            $('#myModal').modal('show');
+      }
+  });
+});
+
+function add_code_file_form(){
+    $("#myModal3 .modal-dialog").css("height",$(window).height()*0.7);
+    $("#myModal3 .modal-dialog").css("width",$(window).width()*0.7);
+}
+
+}
+
+   var names;
+
+    $("#sub2").click(function(){
+         file_checker("url2");
+     });
+
+   $(document).keypress(function(e) {
+       if(e.which == 13) {
+          e.preventDefault();
+          file_checker();
+       }
+   });
+
+
+
+
+
+
+
+$(document).ready(function(){
+       var height = $("#main_content").height();
+       $("#left_side_bar").height(height);
+});
+
+
+</script>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+  $('#start-assessment').click(function(){
+    
+    var url=""
+    if("genpact-machine-learning-hackathon-1" == "job-a-thon-august-2022"){
+      url="https://certification.analyticsvidhya.com/test/datahack/job-a-thon-august-2022"
+    }
+    if(confirm("Are you sure you want to start the test?")){
+        window.location.replace(url);
+    }
+    else{
+      return false;
+    }
+  });
+  
+
+</script>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+var contest_type = ''
+
+    var contest_type = 'activeContest'
+
+dataLayer.push({
+  event:"datalayer_click",
+  'datahack_allContest_contestType': contest_type,
+  'datahack_allContest_url': window.location.href,
+  'datahack_allContest_contestName': 'Food Demand Forecasting',
+  'datahack_allContest_contestPurpose': 'practice'
+  });
+</script>
+<script src="https://apis.google.com/js/platform.js" async defer type="e0bff3b169be1af0a138f489-text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js" type="e0bff3b169be1af0a138f489-text/javascript"></script>
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MPSM42V"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<script type="e0bff3b169be1af0a138f489-text/javascript" src="https://brahma.analyticsvidhya.com/static/js/events.js" defer></script>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+      $(document).ready(function(){
+        $('.av-slick-testiminials').slick({
+          infinite: true,
+          dots: false,
+          arrows: false,
+          responsive: [
+            {
+              breakpoint: 600,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrows: false,
+                dots: true
+              }
+            }
+          ]
+
+        });
+
+        // Slider custom control
+        $('.prev').click(function(){
+          $('.av-slick-testiminials').slick('slickPrev');
+        })
+
+        $('.next').click(function(){
+          $('.av-slick-testiminials').slick('slickNext');
+        })
+      });
+
+    </script>
+
+<div class="av-feedback-form" id="avFeedbackFrom">
+<div class="card">
+<div class="card-body">
+<h4 class="card-title">Feedback</h4>
+<h6>We believe in making Analytics Vidhya the best experience possible for Data Science enthusiasts.
+Help us by providing valuable Feedback.</h6>
+<div class="form-group">
+<label for="avFeedbackField"><small>Type your feedback <em class="text-danger">*</em></small></label>
+<textarea class="form-control" id="avFeedbackField" rows="3"></textarea>
+<p class="text-danger" id="errorMessage"><small></small></p>
+<p class="text-success" id="successMessage"><small></small></p>
+</div>
+</div>
+<button type="submit" class="btn text-white px-4 av-btn" onclick="if (!window.__cfRLUnblockHandlers) return false; submitFeedback(this)" data-cf-modified-e0bff3b169be1af0a138f489-="">Submit</button>
+</div>
+</div>
+
+<script type="e0bff3b169be1af0a138f489-text/javascript" src="https://automation.analyticsvidhya.com/static/js/getFlashDetailsNew.js" defer></script>
+
+<script src="https://automation.analyticsvidhya.com/static/js/getAVBanner.js" type="e0bff3b169be1af0a138f489-text/javascript"></script>
+
+<script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="e0bff3b169be1af0a138f489-|49" defer=""></script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/v652eace1692a40cfa3763df669d7439c1639079717194" integrity="sha512-Gi7xpJR8tSkrpF7aordPZQlW2DLtzUlZcumS8dMQjwDHEnw9I7ZLyiOj/6tZStRBGtGgN6ceN6cMH8z7etPGlw==" data-cf-beacon='{"rayId":"740c0b66c9bc85f4","token":"6dc69ea2ec65420db26006e7a2ffc709","version":"2022.8.0","si":100}' crossorigin="anonymous"></script>
+</body>
+<script type="e0bff3b169be1af0a138f489-text/javascript">
+
+  function submitFeedback(obj) {
+    var avTextField = $('#avFeedbackField').val();
+    if(avTextField == "") {
+     $('#errorMessage').html('Please enter a description.')
+
+    }
+    else
+    {
+      let url = "/post_feedback/"
+      var data = {
+        "comment": avTextField
+      };
+
+
+      $.ajax({
+           url: url,
+           type: 'POST',
+           data: JSON.stringify(data),
+           dataType: "json",
+           contentType: 'application/json',
+           success: function(data) {
+              if (data["success"]) {
+                $('#errorMessage').html('')
+                $('#successMessage').html('Thanks for your valuable feedback. It will help us make the platform bug-free and more useful for you and other users in the community.')
+                $('#avFeedbackField').val('').empty();
+              }
+
+           },
+           error : function(err){
+             if (data["error"]) {
+                $('#errorMessage').html('Please enter a description.')
+                $('#successMessage').html('')
+             }
+           }
+
+       });
+     }
+
+  }
+
+</script>
+
+</html>
