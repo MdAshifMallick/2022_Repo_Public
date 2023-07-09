@@ -1,0 +1,1 @@
+Zoho Analytics Projects where I used SQL for creating Query Table which again used for making business reports and charts.
