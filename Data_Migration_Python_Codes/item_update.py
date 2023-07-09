@@ -1,65 +1,54 @@
 import base64
+import ujson
+import pandas
+import numpy as np
 import re
+import io
 import json
 from time import sleep
 import requests
 from requests.structures import CaseInsensitiveDict
 from datetime import datetime
 
+df=json.load(open("metasphere_item.json"))
+df2=json.load(open("Item (9).json"))
+# df["Item"]=df["Item"].strip()
+
+item_id=[]
+item_name=[]
+rate=[]
+for i in df2:
+    item_id.append(i["Item ID"])
+    item_name.append(i["Item Name"])
+    rate.append(i["Rate"])
+
 def mapping_func():
-    zoho_vndr=json.load(open("data_from_zoho_contacts_PR.json"))
-    qb_vndr=json.load(open("qb_cstmr_PR.json"))
-
-    email=[]
-    phone=[]
-    ds_nm=[]
-    for j in qb_vndr:
-        ds_nm.append(j["DisplayName"])
-        if "PrimaryPhone" in j:
-            phone.append(j["PrimaryPhone"]["FreeFormNumber"])
-        elif "Mobile" in j:
-            phone.append(j["Mobile"]["FreeFormNumber"])
-        else:
-            phone.append("")
-        if "PrimaryEmailAddr" in j:
-            email.append(j["PrimaryEmailAddr"]["Address"])
-        else:
-            email.append("")
-
-
     emp_list=[]
-    map_dict=dict()
-    for i in zoho_vndr:
+    skip_list=[]
+    for j in df:
+        print(j["Item"])
         map_dict=dict()
-        if i["contact_type"]=="customer":
-            map_dict["contact_id"]=i["contact_id"]
-            # map_dict["email"]=email[ds_nm.index(i["contact_name"])]
-            map_dict["phone"]=phone[ds_nm.index(i["contact_name"])]
+        if j["Item"].strip() in item_name:
+            map_dict["item_id"]=item_id[item_name.index(j["Item"].strip())]
+            map_dict["rate"]=float(rate[item_name.index(j["Item"].strip())])
+            map_dict["initial_stock"]=float(j["Qty"].replace(",", ""))
+            map_dict["initial_stock_rate"]=float(j["Calc. Avg"])
             emp_list.append(map_dict)
+        else:
+            skip_list.append(j)
+    print(len(skip_list))
 
-    with open('updt_cntct.json', 'w') as json_file:
+    with open('updt_item.json', 'w') as json_file:
         json.dump(emp_list, json_file,indent=2)
-
-def json_fltr():
-    with open('updt_cntct.json', 'r') as f:
-        data = json.load(f)
-
-    emp=[]
-    for i in data:
-        if i["email"] != "" or  i["phone"] != "" :
-            emp.append(i)
-
-    with open('updt_cntct2.json', 'w') as json_file:
-            json.dump(emp, json_file,indent=2)
 
 def post_request_zoho():
     # https://accounts.zoho.in/oauth/v2/token?code=..&client_id=..&client_secret=..&redirect_uri=http://www.zoho.in/books&grant_type=authorization_code
 
     # ZohoBooks.fullaccess.all
     # code = '1000.2a73bbf05f7b47923757d07be1c8d7f1.f04c26f733bbfa8b31c584bbcdb6a38d'
-    code = '1000.82c4bb14fe45c59073cb822e5f030e74.fa0de5340c040aefb4459d367756e126'
-    client_id = '1000.HG016JCEMYJ8HY9CGRIRWGO7L3J6AD'
-    client_secret = 'c3942592d7792a7c533d58cc1e9ae4a7726ed0af3e'
+    code = '1000.7b77697d5f121a99a49ae6d48c6e515a.e4064c953ec039be2854cc4a7fc2a05f'
+    client_id = '1000.WJH87XFBMWZ4SAS0PUV5J5QVLECVJU'
+    client_secret = '9a7fe0e1bcb8afece29b18de5d8a7e350e4172f496'
 
     # gettokenurl = f'https://accounts.zoho.in/oauth/v2/token?code={code}&client_id={client_id}&client_secret={client_secret}&redirect_uri=http://www.zoho.in/books&grant_type=authorization_code'
     # r1 = requests.post(gettokenurl)
@@ -84,14 +73,13 @@ def post_request_zoho():
     #     print('code is expired [invalid code]')
     #     exit()
     
-    access_token = '1000.66226189e94099c412e618db0f7e1341.897e1997dfc7a43b503a16f7a29d3114'
-    refresh_token = '1000.ca87a1d3fa1c8a238af21b3f91187d3c.a61535b1f980dd5001d2e364ca99e5e4'
+    access_token = '1000.0c5c46db52d231e64f075f2a5e97573d.c5e0db572885605211c355d050e50b86'
+    refresh_token = '1000.63e9a784dc385bba7acdb96672e1a47e.3c78d4b00f9bded1b1dd64835826c775'
     # expires_in = parsed_data["expires_in"]
 
-    organization_id = '60019790139'
-    post_url = f'https://www.zohoapis.in/books/v3/contacts/contactpersons?organization_id={organization_id}'
-
-    f = open('updt_cntct2.json')
+    organization_id = '60018527815'
+    
+    f = open('new.json')
     parsed_data2 = json.load(f)
     items_list = parsed_data2
 
@@ -99,17 +87,19 @@ def post_request_zoho():
     headers["Accept"] = "application/json"
 
     # response_save_dict = dict()
-    response_save_file = open("saved_contact_id_cstmr_pr.txt","a")
+    response_save_file = open("saved_item_id_test.txt","a")
 
     # dd/mm/YY H:M:S
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     # print("date and time =", dt_string)
     response_save_file.write(f"NEW WRITE STARTED : {dt_string}\n")
-
+    rmv_array = np.array([])
+    
     for item in items_list:
+        post_url = f'https://www.zohoapis.in/books/v3/items/{item["item_id"]}?organization_id={organization_id}'
         while True:
-            print(f'Processing for name: {item["contact_id"]}....')
+            print(f'Processing for name: {item["item_id"]}....')
             # Zoho-oauthtoken 1000.a43e3a6b304f8ffb600387c4502054d0.5d80657681be79cf9b70154e2b4fe5a0
             headers["Authorization"] = f"Zoho-oauthtoken {access_token}"
             # access token expires in 3600 seconds (60 minutes)
@@ -119,7 +109,7 @@ def post_request_zoho():
             # param['JSONString'] = item
             # r2 = requests.post(post_url,headers=headers,data=param)
 
-            r2 = requests.post(post_url,headers=headers,json=item)
+            r2 = requests.put(post_url,headers=headers,json=item)
 
             parsed_data3 = r2.json()
             # print(parsed_data3)
@@ -151,17 +141,30 @@ def post_request_zoho():
                     }
                 """
                 # response_save_dict[f'{parsed_data3["contact"]["contact_id"]}'] = item["name"]
-                response_save_file.write(f'{item["contact_id"]}\n')
-                print(f'{item["contact_id"]} is successfully pushed')
+                response_save_file.write(f'{item["item_id"]}\n')
+                print(f'{item["item_id"]} is successfully pushed')
+                
+                
+                # rmv_array.append(item["item_id"])
+                rmv_array = np.append(rmv_array,item["item_id"])
+                new_dic=np.array([])
+                for dic in items_list:
+                    if dic["item_id"] not in rmv_array:
+                        # new_dic.append(dic)
+                        new_dic = np.append(new_dic,dic)
+                with open('new.json', 'w',buffering=1024*1024) as f:
+                    ujson.dump(new_dic.tolist(), f,indent=2)
+                    f.flush()
                 # It means success
                 break
+                
             else:
-                print(f'ERROR occurred: {item["contact_id"]} was able to be pushed')
+                response_save_file.write(f'ERROR occurred: {item["item_id"]} was not able to be pushed\n')
                 print(f'error code returned in json is {parsed_data3["code"]} and msg is {parsed_data3["message"]}')
-            
+                break
 
-        print(f'Successfully updated item named: {item["contact_id"]}')
-
+        print(f'Successfully updated item named: {item["item_id"]}')
+   
 
 def get_new_access_token_zoho(refresh_token,client_id,client_secret):
     get_access_token_url = f'https://accounts.zoho.in/oauth/v2/token?refresh_token={refresh_token}&client_id={client_id}&client_secret={client_secret}&redirect_uri=http://www.zoho.in/books&grant_type=refresh_token'
@@ -187,9 +190,5 @@ def get_new_access_token_zoho(refresh_token,client_id,client_secret):
 
     return access_token
 
-
-
 # mapping_func()
-# json_fltr()
-# post_request_zoho()
-
+post_request_zoho()
