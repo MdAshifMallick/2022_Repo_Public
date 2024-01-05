@@ -1,0 +1,252 @@
+
+itemID = item.get("item_id");
+organizationID = organization.get("organization_id");
+itemDetails = zoho.books.getRecordsByID("items",organizationID,itemID,"zom").get("item");
+// info itemDetails;
+custom_fields = itemDetails.get("custom_fields").toList();
+// info custom_fields;
+for each  cf in custom_fields
+{
+	if(cf.get("label").contains("Item Shape"))
+	{
+		shape = cf.get("value");
+		info shape;
+	}
+	else if(cf.get("label").contains("Length - L (inch)"))
+	{
+		L = cf.get("value");
+		info L;
+	}
+	else if(cf.get("label").contains("Alloy"))
+	{
+		alloy = cf.get("value");
+		info alloy;
+	}
+	else if(cf.get("label").contains("L1"))
+	{
+		L1 = cf.get("value");
+		info L1;
+	}
+	else if(cf.get("label").contains("L2"))
+	{
+		L2 = cf.get("value");
+		info L2;
+	}
+	else if(cf.get("label").contains("Width - W (inch)"))
+	{
+		W = cf.get("value");
+		info W;
+	}
+	else if(cf.get("label").contains("Heigth - H (inch)"))
+	{
+		H = cf.get("value");
+		info H;
+	}
+	else if(cf.get("label").contains("Thickness - t (inch)"))
+	{
+		T = cf.get("value");
+		info T;
+	}
+	else if(cf.get("label").contains("Item Density"))
+	{
+		D = cf.get("value");
+		info D;
+	}
+	// 	else if(cf.get("label").contains("Value_for_Calulation"))
+	// 	{
+	// 		VC = cf.get("value");
+	// 		info VC;
+	// 	}
+	else if(cf.get("label").contains("Conversion Factor inch to cm (C)"))
+	{
+		CR1 = cf.get("value");
+		info CR1;
+	}
+	else
+	{
+		info 'not found';
+	}
+}
+CR = 0.254;
+L = L * CR;
+W = W * CR;
+T = T * CR;
+H = H * CR;
+L1 = L1 * CR;
+L2 = L2 * CR;
+if(shape = "Sheet/Plate")
+{
+	wt = L * W * T * D;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	if(wt < 1)
+	{
+		pcs = 0;
+	}
+	else if(wt >= 1)
+	{
+		pcs = 1 / wt;
+	}
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Rectangular Tube")
+{
+	wt = H * W - (H - T) * (W - T) * L * D;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	if(wt < 1)
+	{
+		pcs = 0;
+	}
+	else if(wt >= 1)
+	{
+		pcs = 1 / wt;
+	}
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Angle")
+{
+	wt = (L1 * T - (L2 - T) * T) * L * D;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	if(wt < 1)
+	{
+		pcs = 0;
+	}
+	else if(wt >= 1)
+	{
+		pcs = 1 / wt;
+	}
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Flat Bar")
+{
+	wt = L * W * H * D;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	if(wt < 1)
+	{
+		pcs = 0;
+	}
+	else if(wt >= 1)
+	{
+		pcs = 1 / wt;
+	}
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Hexagon Bar")
+{
+	wt = L * W * W * 2.598076 * D;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	if(wt < 1)
+	{
+		pcs = 0;
+	}
+	else if(wt >= 1)
+	{
+		pcs = 1 / wt;
+	}
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Others")
+{
+	wt = 0;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	pcs = 0;
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Round Bar")
+{
+	wt = 0.7854 * H * H * L * D;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	if(wt < 1)
+	{
+		pcs = "";
+	}
+	else if(wt >= 1)
+	{
+		pcs = 1 / wt;
+	}
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Round Tube (Inside Diam.)")
+{
+	wt = 0;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	pcs = 0;
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Round Tube (Outside Diam.)")
+{
+	wt = 0;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	pcs = 0;
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+else if(shape = "Square Tube")
+{
+	wt = T * L * H * D;
+	cf2 = Map();
+	cf2.put("label","Weigth - (kgs)");
+	cf2.put("value",wt);
+	if(wt < 1)
+	{
+		pcs = 0;
+	}
+	else if(wt >= 1)
+	{
+		pcs = 1 / wt;
+	}
+	cf3 = Map();
+	cf3.put("label","Item (Pcs)");
+	cf3.put("value",pcs);
+}
+key_val = {"1050":2.71,"1100":2.71,"2017":2.79,"2024":2.78,"2124":2.78,"3003":2.73,"3105":2.72,"5052":2.68,"5083":2.66,"5086":2.66,"5754":2.67,"6061":2.7,"6063":2.7,"7050":2.83,"7075":2.81,"Arconic MIC-6":2.79,"Bikar F-30":2.66,"Alimex ACP 5080":2.66,"Gleich C-250":2.66,"Certal":2.76,"2014":2.8,"2219":2.84,"3004":2.72,"6013":2.71,"7150":2.83,"7175":2.8,"8000":2.8,"Gleich C-210":2.65,"Alpase K100-S":2.66,"Alpase M-1":2.79,"Alpase M-5":2.65,"Vista Duramold-2":2.8,"Vista Duramold-5":2.66,"1020":7.8,"1045":7.8,"1117":7.8,"4130":7.8,"4140":7.8,"4340":7.8,"1010 ST37":7.85,"1113":7.85,"12L14":7.87,"ST-52.3":7.85,"3115":7.83,"OVAKO 145":7.8,"8620":7.85,"5115":7.85,"67SIC5":7.85,"2210":7.85,"1.251":7.8,"1.2767":7.8,"1.2714":7.85,"1.2738":7.8,"1.2379":7.7,"1.2436":7.67,"1.2312":7.85,"1.2311":7.8,"1.2316":7.75,"1.2083":7.8,"1.2085":7.8,"SP 300":7.85,"SP 350":7.85,"SP 400":7.8,"2344":7.75,"M2":8.14,"C11000":8.94,"C12200":8.94,"C10200":8.94,"C17200":8.25,"C26800":8.45,"C27400":8.43,"C36000":8.5,"C37700":8.44,"C38500":8.45,"C83600":8.78,"C93700":9.0,"C90700":8.89,"C93200":8.8,"C51000":8.8,"C54400":8.87,"C63000":7.58,"Lead":11.35,"200":8.9,"201":8.9,"28":8.0,"400":8.8,"500":8.5,"59":8.9,"600":8.47,"601":8.47,"625":8.44,"800HT":7.94,"825":8.14,"C-22":8.9,"C-276":8.9,"Hastelloy X":8.22,"X-718":8.23,"ABS":1.06,"C PVC":1.55,"EPOXYGLASS":1.82,"Fiberglass":1.1,"HIPS":1.06,"PA 12":1.02,"PA 6":1.13,"PA 6 MOS2":1.14,"PA 66":1.14,"PA 66 30% GF":1.35,"PA 66 MOS2":1.14,"PBT 30% GF":1.53,"PC":1.2,"PC 10% GF":1.27,"PC 20% GF":1.33,"PC 30% GF":1.42,"PE":0.95,"PE 1000":0.93,"PE 500":0.93,"PEEK":1.3,"PEEK 30% CF":1.4,"PEEK 30% GF":1.51,"PEEK PVX":1.48,"PEEK TF 10":1.35,"PEI":1.27,"PEI 10% GF":1.34,"PEI 20% GF":1.42,"PEI 30% GF":1.51,"PES":1.37,"PET":1.37,"PET TF":1.44,"PHENOLIC FABRIC (NOVOTEX)":1.35,"PHENOLIC PAPER (PARTINEX)":1.36,"PMMA":1.19,"POM C":1.41,"POM C 25%GF":1.58,"POM H":1.42,"POM-H AD AF":1.54,"PP":0.92,"PP 30% GF":1.14,"PPE":1.06,"PPE 30% GF":1.29,"PPS":1.35,"PPS 40% GF":1.64,"PPSU":1.29,"PS":1.05,"PSU":1.24,"PTFE":2.2,"PTFE 60% BRONZE":3.9,"PTFE CARBON":2.11,"PTFE GF 25%":2.25,"PTFE GRAFIT":2.15,"PVC":1.41,"PVDF":1.78,"13-8 MO":7.8,"15-5 PH":7.8,"17-4 PH":7.8,"17-7 PH":7.8,"2205":7.8,"254SMO":8.0,"301":8.0,"302":8.0,"303":8.0,"304/304L":8.0,"309":8.0,"310":8.0,"316/316L":8.0,"317L":8.0,"321":8.0,"330":8.1,"347":8.0,"3CR12":7.8,"410":7.8,"416":7.8,"420":7.8,"430":7.8,"430F":7.8,"431":7.8,"440C":7.8,"446":7.8,"455":7.8,"904L":8.0,"Grade 2":4.51,"Grade 5":4.43,"Grade 7":4.51};
+info key_val.get(alloy);
+cf4 = Map();
+cf4.put("label","Item Density");
+cf4.put("value",key_val.get(alloy));
+info cf4;
+list3 = list();
+list1 = cf2.toCollection();
+list2 = cf3.toCollection();
+list4 = cf4.toCollection();
+list3.add(list1);
+list3.add(list2);
+list3.add(list4);
+json = Map();
+json.put("custom_fields",list3);
+update_item = zoho.books.updateRecord("items",organizationID,itemID,json,"zom");
+info update_item.get("message");
