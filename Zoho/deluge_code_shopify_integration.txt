@@ -1,0 +1,192 @@
+
+// ---------------------------------- zoho cus and item ----------------------------
+cus_list = Collection();
+item_list = Collection();
+page = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
+for each  pg in page
+{
+	json = {"page":pg,"per_page":200,"contact_type":"customer"};
+	get_cus = zoho.books.getRecords("contacts","60027834942",json,"zoho_book");
+	cus = get_cus.get("contacts");
+	for each  c in cus
+	{
+		if(c.get("cf_shopify_customer_id") != null)
+		{
+			cus_list.insert(c.get("cf_shopify_customer_id"):c.get("contact_id"));
+		}
+	}
+	if(get_cus.get("page_context").get("has_more_page") == false)
+	{
+		break;
+	}
+}
+// info cus_list;
+for each  pg in page
+{
+	json = {"page":pg,"per_page":200};
+	get_cus = zoho.books.getRecords("items","60027834942",json,"zoho_book");
+	cus = get_cus.get("items");
+	for each  c in cus
+	{
+		if(c.get("cf_shopify_product_id") != null)
+		{
+			item_list.insert(c.get("cf_shopify_product_id"):c.get("item_id"));
+		}
+	}
+	if(get_cus.get("page_context").get("has_more_page") == false)
+	{
+		break;
+	}
+}
+// info item_list;
+// ---------------------------------- zoho cus and item ----------------------------
+// info zoho.currentdate.subDay(0);
+zoho_tax = Collection();
+get_tax = invokeurl
+[
+	url :"https://www.zohoapis.in/books/v3/settings/taxes?organization_id=60027834942"
+	type :GET
+	connection:"zoho_book"
+];
+for each  zt in get_tax.get("taxes")
+{
+	// 	info zt;
+	zoho_tax.insert(zt.get("tax_name").toText():zt.get("tax_id").toText());
+}
+info zoho_tax;
+json = {"X-Shopify-Access-Token":"shpat_**************************"};
+shopify = invokeurl
+[
+	url :"https://sujatra-sarees.myshopify.com/admin/api/2023-10/orders.json?limit=250&fulfillment_status=shipped&processed_at_min=" + toDateTime("01-Apr-2024 00:00:00").subMinutes(330) + "&processed_at_max=" + toDateTime("01-Apr-2024 23:59:59").subMinutes(330)
+	type :GET
+	headers:json
+];
+// info shopify;
+for each  ordr in shopify.get("orders")
+{
+	// 		info ordr;
+	try 
+	{
+		line_item = List();
+		for each  i2 in ordr.get("line_items")
+		{
+			// 				info i2;
+			tax = 0;
+			for each  t in i2.get("tax_lines")
+			{
+				if(t.get("title") == "IGST")
+				{
+					tax_igst = tax + t.get("rate") * 100;
+				}
+				else
+				{
+					tax_igst = null;
+					tax = tax + t.get("rate") * 100;
+				}
+			}
+			if(tax_igst != null)
+			{
+				tax_name = "IGST" + tax_igst.toNumber();
+			}
+			else
+			{
+				tax_name = "GST" + tax.toNumber().toText();
+			}
+			info tax_name;
+			// 							info zoho_tax.get(tax_name);
+			discount = 0;
+			for each  d in i2.get("discount_allocations")
+			{
+				discount = discount + d.get("amount").toDecimal();
+			}
+			// 							info discount;
+			// -------------------------------- product -----------------------------------------------				
+			if(item_list.get(i2.get("variant_id").toText()) == null)
+			{
+				sfy_item = invokeurl
+				[
+					url :"https://sujatra-sarees.myshopify.com/admin/api/2024-04/products/" + i2.get("product_id") + ".json?"
+					type :GET
+					headers:json
+				];
+				i = sfy_item.get("product");
+				for each  var in i.get("variants")
+				{
+					dic = {"name":i.get("title") + "-" + var.get("title"),"product_type":"goods","is_taxable":true,"sku":var.get("sku"),"rate":var.get("price").toDecimal(),"purchase_rate":0,"inventory_account_id":"1728136000001214857","item_type":"inventory","custom_fields":{{"label":"Shopify_Product_ID","value":var.get("id")}}};
+					crt_item = zoho.books.createRecord("items","60027834942",dic.toMap(),"zoho_book");
+					// 		info crt_item;
+					if(crt_item.get("code") == 1001)
+					{
+						get_item = zoho.books.getRecords("items","60027834942","sku=" + var.get("sku"),"zoho_book");
+						// info get_item.get("items").get(0).get("item_id");
+						updt_item = zoho.books.updateRecord("items","60027834942",get_item.get("items").get(0).get("item_id"),dic.toMap(),"zoho_book");
+						// 			info updt_item;
+					}
+				}
+				zoho_item_id = zoho.books.getRecords("items","60027834942","cf_shopify_product_id=" + i2.get("variant_id"),"zoho_book");
+				product = zoho_item_id.get("items").get(0).get("item_id");
+			}
+			else
+			{
+				product = item_list.get(i2.get("variant_id").toText());
+			}
+			// --------------------------------------product-----------------------------------	
+			line_item.add({"item_id":product,"quantity":i2.get("quantity"),"rate":i2.get("price"),"discount":discount,"tax_id":zoho_tax.get(tax_name)});
+		}
+		// --------------------------------------------  customer -------------------- 
+		if(cus_list.get(ordr.get("customer").get("id").toText()) == null)
+		{
+			shopify_cus = invokeurl
+			[
+				url :"https://sujatra-sarees.myshopify.com/admin/api/2024-04/customers/" + ordr.get("customer").get("id") + ".json?"
+				type :GET
+				headers:json
+			];
+			cus = shopify_cus.get("customer");
+			if(cus.get("default_address") != null && cus.get("default_address").get("name") != null)
+			{
+				dic = {"contact_persons":{{"email":cus.get("email")}},"contact_name":cus.get("default_address").get("name"),"contact_type":"customer","gst_treatment":"consumer","customer_sub_type":"individual","custom_fields":{{"label":"Shopify_Customer_ID","value":cus.get("id")}},"billing_address":{"address":cus.get("default_address").get("address1"),"city":cus.get("default_address").get("city"),"state":cus.get("default_address").get("province"),"zip":cus.get("default_address").get("zip"),"phone":cus.get("default_address").get("phone"),"country":cus.get("default_address").get("country_name")}};
+				crt_cus = zoho.books.createRecord("contacts","60027834942",dic.toMap(),"zoho_book");
+				info crt_cus;
+			}
+			else if(cus.get("default_address") != null && cus.get("default_address").get("name") == null)
+			{
+				dic = {"contact_persons":{{"email":cus.get("email")}},"contact_name":cus.get("email"),"contact_type":"customer","gst_treatment":"consumer","customer_sub_type":"individual","custom_fields":{{"label":"Shopify_Customer_ID","value":cus.get("id")}},"billing_address":{"address":cus.get("default_address").get("address1"),"city":cus.get("default_address").get("city"),"state":cus.get("default_address").get("province"),"zip":cus.get("default_address").get("zip"),"phone":cus.get("default_address").get("phone"),"country":cus.get("default_address").get("country_name")}};
+				crt_cus = zoho.books.createRecord("contacts","60027834942",dic.toMap(),"zoho_book");
+				info crt_cus;
+			}
+			else if(cus.get("default_address") == null && cus.get("last_name") != null && cus.get("first_name") != null)
+			{
+				dic = {"contact_persons":{{"email":cus.get("email")}},"contact_name":cus.get("first_name") + " " + cus.get("last_name"),"contact_type":"customer","gst_treatment":"consumer","customer_sub_type":"individual","custom_fields":{{"label":"Shopify_Customer_ID","value":cus.get("id")}}};
+				crt_cus = zoho.books.createRecord("contacts","60027834942",dic.toMap(),"zoho_book");
+				info crt_cus;
+			}
+			else if(cus.get("default_address") == null && cus.get("last_name") == null || cus.get("first_name") == null)
+			{
+				dic = {"contact_persons":{{"email":cus.get("email")}},"contact_name":cus.get("email"),"contact_type":"customer","gst_treatment":"consumer","customer_sub_type":"individual","custom_fields":{{"label":"Shopify_Customer_ID","value":cus.get("id")}}};
+				crt_cus = zoho.books.createRecord("contacts","60027834942",dic.toMap(),"zoho_book");
+				info crt_cus;
+			}
+			else
+			{
+				info "0";
+			}
+			zoho_cus = zoho.books.getRecords("contacts","60027834942","cf_shopify_customer_id=" + ordr.get("customer").get("id"),"zoho_book");
+			cus_id = zoho_cus.get("contacts").get(0).get("contact_id");
+		}
+		else
+		{
+			cus_id = cus_list.get(ordr.get("customer").get("id").toText());
+		}
+		// 			info cus_id;
+		// --------------------------------- customer----------------------------------------
+		dic = {"is_inclusive_tax":true,"customer_id":cus_id,"invoice_number":ordr.get("order_number"),"reference_number":ordr.get("confirmation_number"),"date":ordr.get("processed_at").subString(0,10),"place_of_supply":ordr.get("billing_address").get("province_code"),"line_items":line_item,"ignore_auto_number_generation":true,"custom_fields":{{"label":"Shopify_Order_ID","value":ordr.get("id")}}};
+		// 						info dic;
+		crt_inv = zoho.books.createRecord("invoices","60027834942",dic.toMap(),"zoho_book");
+		info crt_inv;
+	}
+	catch (e)
+	{
+		x = 0;
+	}
+}
